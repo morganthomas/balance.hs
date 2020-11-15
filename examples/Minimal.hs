@@ -3,18 +3,21 @@
 {-# LANGUAGE KindSignatures       #-}
 {-# LANGUAGE OverloadedStrings    #-}
 {-# LANGUAGE TypeFamilies         #-}
+{-# OPTIONS_GHC -Wno-type-defaults -Wno-redundant-constraints #-}
 
 module Main where
 
 
-import Balance
+import Balance.Element
+import Balance.Geometry
+import Balance.Penalty
+import Balance.Surface
 import Balance.Surface.BlankCanvas
+
 import Control.Monad (forM_)
 import Data.Colour.SRGB
 import Data.Text (Text)
-import GHC.Exts (Constraint)
 import Graphics.Blank hiding (port)
-import Graphics.Blank.Style
 
 default (Text)
 
@@ -36,8 +39,8 @@ instance Traversable BasicParams where
 
 instance Element Basic where
   type Params Basic = BasicParams
-  type BadnessConstraints Basic a = Fractional a
-  badness Basic = \(BasicParams x) -> x
+  type PenaltyConstraints Basic a = Fractional a
+  penalty Basic = \(BasicParams x) -> Penalty x
   guess _ Basic = BasicParams 100.0
   render Basic (BasicParams x) surface = do
     dims <- getSurfaceDimensions surface
