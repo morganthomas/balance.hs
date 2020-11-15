@@ -10,7 +10,7 @@ import Balance.Element.Rectangular
 import Balance.Geometry
 import Balance.Penalty
 
-import Control.Lens
+import Control.Lens hiding (children)
 import Control.Monad (forM_)
 import Data.Proxy
 
@@ -54,7 +54,22 @@ hboxError hb (HBoxParams [child] rect) =
       abs (unLength . unXOffset $ x rect - x childRect)
     + abs (unLength $ unXOffset (farX (x rect) (w rect))
                     - unXOffset (farX (x childRect) (w childRect)))
-hboxError _ (HBoxParams children rect) = error "hboxError"
+hboxError hb (HBoxParams (firstChild:secondChild:children) rect) =
+  let firstChildRect = view (boundingBox (childPxy hb)) firstChild
+      x = unXOffset . coordX . rectangleCoord
+      firstError = Error . unLength . abs $ x rect - x firstChildRect
+      otherErrors = hboxError' hb firstChild secondChild children rect
+  in firstError + otherErrors
+
+
+hboxError' :: RectangularElement e => Num a => HBox e -> Params e a -> Params e a -> [Params e a] -> Rectangle a -> Error a
+hboxError' hb prevChild lastChild [] rect =
+  let prevChildRect = view (boundingBox (childPxy hb)) prevChild
+      lastChildRect = view (boundingBox (childPxy hb)) lastChild
+      far r = farX (coordX (rectangleCoord r)) (widthDim (rectangleDimensions r))
+  in (Error . unLength . abs . unXOffset $ far rect - far lastChildRect)
+   + (Error . unLength . unWidth $ measureWidth (far prevChildRect) (coordX (rectangleCoord lastChildRect)))
+hboxError' hb prevChild child (nextChild:children) rect = undefined
 
 
 instance RectangularElement e => RectangularElement (HBox e) where

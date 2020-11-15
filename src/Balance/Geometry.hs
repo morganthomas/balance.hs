@@ -85,6 +85,6 @@ minimumBoundingRectangle :: Num a => Ord a => [Rectangle a] -> Rectangle a
 minimumBoundingRectangle [] = Rectangle (Coord 0 0) (Dimensions 0 0)
 minimumBoundingRectangle (rect:rects) = foldl' f rect rects
   where f (Rectangle (Coord x0 y0) (Dimensions w0 h0)) (Rectangle (Coord x1 y1) (Dimensions w1 h1)) =
-          let c@(Coord x y) = Coord (min x0 x1) (min y0 y1)
-              d@(Coord x' y') = Coord (max (farX x0 w0) (farX x1 w1)) (max (farY y0 h0) (farY y1 h1))
+          let c = Coord (min x0 x1) (min y0 y1)
+              d = Coord (max (farX x0 w0) (farX x1 w1)) (max (farY y0 h0) (farY y1 h1))
           in Rectangle c (measureRectangle c d)
