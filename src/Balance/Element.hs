@@ -18,9 +18,9 @@ import Numeric.AD.Internal.Reverse (Tape, Reverse)
 
 class Element e where
   type Params e :: * -> *
-  type BadnessConstraints e a :: Constraint
-  badness :: BadnessConstraints e a => e -> (forall s. Reifies s Tape => Params e (Reverse s a) -> Reverse s a)
-  guess :: BadnessConstraints e a => Proxy a -> e -> Params e a
+  type PenaltyConstraints e a :: Constraint
+  penalty :: PenaltyConstraints e a => e -> (forall s. Reifies s Tape => Params e (Reverse s a) -> Reverse s a)
+  guess :: PenaltyConstraints e a => Proxy a -> e -> Params e a
   render :: Surface m s => e -> Params e Double -> s -> m ()
 
 
@@ -28,8 +28,8 @@ class Element e where
 optimize :: Element e
          => Fractional a
          => Ord a
-         => BadnessConstraints e a
+         => PenaltyConstraints e a
          => Traversable (Params e)
          => e
          -> [Params e a]
-optimize e = gradientDescent (badness e) (guess Proxy e)
+optimize e = gradientDescent (penalty e) (guess Proxy e)

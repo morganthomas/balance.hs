@@ -21,6 +21,7 @@ library
                        Balance.Element.Rectangular
                        Balance.Element.Stack
                        Balance.Geometry
+                       Balance.Penalty
                        Balance.Surface
                        Balance.Surface.BlankCanvas
   -- other-modules:
