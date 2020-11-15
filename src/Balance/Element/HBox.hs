@@ -16,7 +16,7 @@ import Data.Proxy
 
 
 data HBox e = HBox
-  { hboxPenalty  :: Penalty
+  { hboxPenalty  :: PenaltyFn
   , hboxChildren :: [e] }
 
 
@@ -35,23 +35,26 @@ childPxy _ = Proxy
 
 instance RectangularElement e => Element (HBox e) where
   type Params (HBox e) = HBoxParams e
-  type PenaltyConstraints (HBox e) a = (PenaltyConstraints e a, Num a, Ord a)
-  penalty (HBox _penalty es) = \(HBoxParams ps _) -> sum $ zipWith penalty es ps -- TODO: constraint of horizontal alignment within bounding box
+  type PenaltyConstraints (HBox e) a = (PenaltyConstraints e a, Real a, Fractional a, Ord a)
+  penalty hb = \ps@(HBoxParams cps _) -> sum (zipWith penalty (hboxChildren hb) cps)
+                                       + hboxPenalty hb (hboxError hb ps)
   guess pxy hb@(HBox _ es) =
     let subguesses = guess pxy <$> es
     in HBoxParams subguesses (minimumBoundingRectangle (view (boundingBox (childPxy hb)) <$> subguesses))
   render (HBox _ es) (HBoxParams ps _) surface = forM_ (zip es ps) $ \(e,p) -> render e p surface
 
 
-hboxError :: Num a => HBoxParams e a -> a
-hboxError (HBoxParams [] _) = 0
-hboxError (HBoxParams [child] rect) =
-  let childRect = view (boundingBox Proxy) child in
-      abs (unLength $ unXOffset (coordX (rectangleCoord rect))
-                    - unXOffset (coordX (rectangleCoord childRect)))
-    + abs (unLength $ unXOffset (farX (coordX (rectangleCoord rect)) (widthDim rect))
-                    - unXOffset (farX (coordX (rectangleCoord childRect))) (widthDim childRect))
-hboxError (HBoxParams children rect) = error "hboxError"
+hboxError :: RectangularElement e => Num a => HBox e -> HBoxParams e a -> Error a
+hboxError _ (HBoxParams [] _) = 0
+hboxError hb (HBoxParams [child] rect) =
+  let childRect = view (boundingBox (childPxy hb)) child 
+      x = coordX . rectangleCoord
+      w = widthDim . rectangleDimensions in
+   Error $
+      abs (unLength . unXOffset $ x rect - x childRect)
+    + abs (unLength $ unXOffset (farX (x rect) (w rect))
+                    - unXOffset (farX (x childRect) (w childRect)))
+hboxError _ (HBoxParams children rect) = error "hboxError"
 
 
 instance RectangularElement e => RectangularElement (HBox e) where

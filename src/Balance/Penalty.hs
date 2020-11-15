@@ -1,15 +1,26 @@
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE RankNTypes                 #-}
 
 
 module Balance.Penalty
-  ( Penalty
+  ( Error (..)
+  , Penalty (..)
+  , PenaltyFn
   , QuadraticPenalty (..)
   , quadraticPenalty
   , prohibitiveQuadraticPenalty
   ) where
 
 
-type Penalty = forall a. ( Real a, Fractional a ) => a -> a
+newtype Error a = Error { unError :: a }
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat)
+
+
+newtype Penalty a = Penalty { unPenalty :: a }
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat)
+
+
+type PenaltyFn = forall a. ( Real a, Fractional a ) => Error a -> Penalty a
 
 
 data QuadraticPenalty = QuadraticPenalty
@@ -18,9 +29,11 @@ data QuadraticPenalty = QuadraticPenalty
   , quadraticCoefficient :: Double }
 
 
-quadraticPenalty :: QuadraticPenalty -> Penalty
-quadraticPenalty (QuadraticPenalty c b a) x =
-  fromRational (toRational a) * x * x + fromRational (toRational b) * x + fromRational (toRational c)
+quadraticPenalty :: QuadraticPenalty -> PenaltyFn
+quadraticPenalty (QuadraticPenalty c b a) (Error x) =
+  Penalty $ fromRational (toRational a) * x * x
+          + fromRational (toRational b) * x
+          + fromRational (toRational c)
 
 
 prohibitiveQuadraticPenalty :: QuadraticPenalty
