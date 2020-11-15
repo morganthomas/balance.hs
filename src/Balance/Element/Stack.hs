@@ -1,10 +1,10 @@
 {-# LANGUAGE TypeFamilies #-}
 
 
-module Balance.Element.Stack where
+module Balance.Element.Stack ( Stack (..), StackParams (..) ) where
 
 
-import Balance
+import Balance.Element
 
 import Control.Monad (forM_)
 import Data.Proxy

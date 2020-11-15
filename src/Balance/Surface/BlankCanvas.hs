@@ -1,10 +1,11 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 
-module Balance.Surface.BlankCanvas where
+module Balance.Surface.BlankCanvas ( BlankCanvasSurface (..) ) where
 
 
-import Balance
+import Balance.Geometry
+import Balance.Surface
 
 import Graphics.Blank hiding (fillStyle)
 import Graphics.Blank.Style (fillStyle)
