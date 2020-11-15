@@ -12,4 +12,4 @@ import Data.Proxy
 
 
 class Element e => RectangularElement e where
-    boundingBox :: Proxy e -> Lens' (Params e a) (Rectangle a)
+  boundingBox :: Proxy e -> Lens' (Params e a) (Rectangle a)
