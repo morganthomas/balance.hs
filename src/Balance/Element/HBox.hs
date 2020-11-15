@@ -43,6 +43,17 @@ instance RectangularElement e => Element (HBox e) where
   render (HBox _ es) (HBoxParams ps _) surface = forM_ (zip es ps) $ \(e,p) -> render e p surface
 
 
+hboxError :: Num a => HBoxParams e a -> a
+hboxError (HBoxParams [] _) = 0
+hboxError (HBoxParams [child] rect) =
+  let childRect = view (boundingBox Proxy) child in
+      abs (unLength $ unXOffset (coordX (rectangleCoord rect))
+                    - unXOffset (coordX (rectangleCoord childRect)))
+    + abs (unLength $ unXOffset (farX (coordX (rectangleCoord rect)) (widthDim rect))
+                    - unXOffset (farX (coordX (rectangleCoord childRect))) (widthDim childRect))
+hboxError (HBoxParams children rect) = error "hboxError"
+
+
 instance RectangularElement e => RectangularElement (HBox e) where
   boundingBox _ = lens (\(HBoxParams _ bb) -> bb)
                        (\(HBoxParams ps _) bb -> HBoxParams ps bb)
