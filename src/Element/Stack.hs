@@ -1,5 +1,6 @@
 {-# LANGUAGE TypeFamilies #-}
 
+
 module Balance.Element.Stack where
 
 
@@ -9,10 +10,10 @@ import Control.Monad (forM_)
 import Data.Proxy
 
 
-data Stack e = Stack [e]
+newtype Stack e = Stack [e]
 
 
-data StackParams e a = StackParams [Params e a]
+newtype StackParams e a = StackParams [Params e a]
 
 
 instance Element e => Element (Stack e) where
