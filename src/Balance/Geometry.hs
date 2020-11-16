@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFunctor              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 
@@ -25,31 +26,31 @@ import Data.List (foldl')
 
 -- |Lengths are in dots, a surface dependent unit of measure representing the surface's resolution.
 newtype Length a = Length { unLength :: a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat)
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
 -- |Resolution is in dots per inch.
 newtype Resolution a = Resolution { unResolution :: a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat)
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
 newtype Width a = Width { unWidth :: Length a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat)
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
 newtype Height a = Height { unHeight :: Length a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat)
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
 data Dimensions a = Dimensions { widthDim :: Width a, heightDim :: Height a }
 
 
 newtype XOffset a = XOffset { unXOffset :: Length a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat)
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
 newtype YOffset a = YOffset { unYOffset :: Length a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat)
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
 farX :: Num a => XOffset a -> Width a -> XOffset a

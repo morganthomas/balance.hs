@@ -21,11 +21,12 @@ import Balance.Surface
 import Control.Lens
 import Data.Colour
 import Data.Reflection (Reifies)
+import Numeric.AD (Scalar, Mode, auto)
 import Numeric.AD.Internal.Reverse (Tape, Reverse)
 
 
-data FillElement = FillElement
-  { fillElementPenalty :: forall a s. ( Real a, Fractional a, Reifies s Tape )
+data FillElement a = FillElement
+  { fillElementPenalty :: forall s. Reifies s Tape
                        => FillElementParams (Reverse s a) -> Penalty (Reverse s a)
   , fillElementColor   :: Maybe (Colour Double) }
 
@@ -33,9 +34,9 @@ data FillElement = FillElement
 newtype FillElementParams a = FillElementParams { unFillElementParams :: (Rectangle a) }
 
 
-instance Element FillElement where
-  type Params FillElement = FillElementParams
-  type PenaltyConstraints FillElement a = ( Real a, Fractional a )
+instance Element (FillElement a) where
+  type Params (FillElement a) = FillElementParams
+  type PenaltyConstraints (FillElement a) b = ( b ~ a, Mode a )
   penalty = fillElementPenalty
   guess _ _ = FillElementParams (Rectangle (Coord 0 0) (Dimensions 0 0))
   render (FillElement _ (Just color)) (FillElementParams rect) surface =
@@ -43,25 +44,31 @@ instance Element FillElement where
   render (FillElement _ Nothing) _ _ = return ()
 
 
-instance RectangularElement FillElement where
+instance RectangularElement (FillElement a) where
   boundingBox _ = lens unFillElementParams (const FillElementParams)
 
 
-rigidError :: ( Real a, Fractional a ) => Dimensions Double -> FillElementParams a -> Error a
+-- TODO: rigid in one direction and flex in another
+
+
+rigidError :: ( Mode a, Scalar a ~ Double, Reifies s Tape )
+           => Dimensions Double -> FillElementParams (Reverse s a) -> Error (Reverse s a)
 rigidError ideal (FillElementParams rect) =
-  Error $ abs (unLength . unWidth  $ fromRational (toRational (widthDim  ideal))
+  Error $ abs (unLength . unWidth  $ (auto . auto <$> widthDim  ideal)
                                    - widthDim  (rectangleDimensions rect))
-        + abs (unLength . unHeight $ fromRational (toRational (heightDim ideal))
+        + abs (unLength . unHeight $ (auto . auto <$> heightDim ideal)
                                    - heightDim (rectangleDimensions rect))
 
 
-fillRigid :: PenaltyFn -> Dimensions Double -> Maybe (Colour Double) -> FillElement
+fillRigid :: ( Mode a, Scalar a ~ Double )
+          => PenaltyFn a -> Dimensions Double -> Maybe (Colour Double) -> FillElement a
 fillRigid pen ideal = FillElement (pen . rigidError ideal)
 
 
-fillVeryRigid :: Dimensions Double -> Maybe (Colour Double) -> FillElement
+fillVeryRigid :: ( Mode a, Scalar a ~ Double )
+              => Dimensions Double -> Maybe (Colour Double) -> FillElement a
 fillVeryRigid = fillRigid (quadraticPenalty prohibitiveQuadraticPenalty)
 
 
-fillFlex :: Maybe (Colour Double) -> FillElement
+fillFlex :: Num a => Maybe (Colour Double) -> FillElement a
 fillFlex = FillElement (const 0)

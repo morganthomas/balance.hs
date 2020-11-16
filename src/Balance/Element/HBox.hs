@@ -1,5 +1,6 @@
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE RankNTypes   #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeFamilies     #-}
+{-# LANGUAGE RankNTypes       #-}
 
 
 module Balance.Element.HBox ( HBox (..), hbox, HBoxParams (..) ) where
@@ -13,14 +14,17 @@ import Balance.Penalty
 import Control.Lens hiding (children)
 import Control.Monad (forM_)
 import Data.Proxy
+import Data.Reflection (Reifies)
+import Numeric.AD (Mode)
+import Numeric.AD.Internal.Reverse (Reverse, Tape)
 
 
-data HBox e = HBox
-  { hboxPenalty  :: PenaltyFn
+data HBox e a = HBox
+  { hboxPenalty  :: PenaltyFn a
   , hboxChildren :: [e] }
 
 
-hbox :: [e] -> HBox e
+hbox :: Mode a => [e] -> HBox e a
 hbox = HBox (quadraticPenalty prohibitiveQuadraticPenalty)
 
 
@@ -29,13 +33,13 @@ data HBoxParams e a = HBoxParams
   , hboxBoundingBox    :: Rectangle a }
 
 
-childPxy :: HBox e -> Proxy e
+childPxy :: HBox e a -> Proxy e
 childPxy _ = Proxy
 
 
-instance RectangularElement e => Element (HBox e) where
-  type Params (HBox e) = HBoxParams e
-  type PenaltyConstraints (HBox e) a = (PenaltyConstraints e a, Real a, Fractional a, Ord a)
+instance RectangularElement e => Element (HBox e a) where
+  type Params (HBox e a) = HBoxParams e
+  type PenaltyConstraints (HBox e a) b = ( b ~ a, PenaltyConstraints e a, Mode a, Ord a )
   penalty hb = \ps@(HBoxParams cps _) -> sum (zipWith penalty (hboxChildren hb) cps)
                                        + hboxPenalty hb (hboxError hb ps)
   guess pxy hb@(HBox _ es) =
@@ -44,7 +48,10 @@ instance RectangularElement e => Element (HBox e) where
   render (HBox _ es) (HBoxParams ps _) surface = forM_ (zip es ps) $ \(e,p) -> render e p surface
 
 
-hboxError :: RectangularElement e => Num a => HBox e -> HBoxParams e a -> Error a
+-- TODO: vertical error
+hboxError :: RectangularElement e => Num a 
+          => HBox e a 
+          -> forall s. Reifies s Tape => HBoxParams e (Reverse s a) -> Error (Reverse s a)
 hboxError _ (HBoxParams [] _) = 0
 hboxError hb (HBoxParams [child] rect) =
   let childRect = view (boundingBox (childPxy hb)) child 
@@ -62,7 +69,14 @@ hboxError hb (HBoxParams (firstChild:secondChild:children) rect) =
   in firstError + otherErrors
 
 
-hboxError' :: RectangularElement e => Num a => HBox e -> Params e a -> Params e a -> [Params e a] -> Rectangle a -> Error a
+hboxError' :: RectangularElement e => Num a
+           => HBox e a
+           -> forall s. Reifies s Tape
+           => Params e (Reverse s a)
+           -> Params e (Reverse s a)
+           -> [Params e (Reverse s a)]
+           -> Rectangle (Reverse s a)
+           -> Error (Reverse s a)
 hboxError' hb prevChild lastChild [] rect =
   let prevChildRect = view (boundingBox (childPxy hb)) prevChild
       lastChildRect = view (boundingBox (childPxy hb)) lastChild
@@ -82,6 +96,6 @@ hboxError' hb prevChild child (nextChild:children) rect =
   in leftError + rightError + otherErrors
 
 
-instance RectangularElement e => RectangularElement (HBox e) where
+instance RectangularElement e => RectangularElement (HBox e a) where
   boundingBox _ = lens (\(HBoxParams _ bb) -> bb)
                        (\(HBoxParams ps _) bb -> HBoxParams ps bb)

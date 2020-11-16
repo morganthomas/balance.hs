@@ -1,5 +1,8 @@
+{-# LANGUAGE DeriveFunctor              #-}
+{-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE RankNTypes                 #-}
+{-# LANGUAGE TypeFamilies               #-}
 
 
 module Balance.Penalty
@@ -12,29 +15,34 @@ module Balance.Penalty
   ) where
 
 
+import Data.Reflection (Reifies)
+import Numeric.AD (Mode, auto)
+import Numeric.AD.Internal.Reverse (Tape, Reverse)
+
+
 newtype Error a = Error { unError :: a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat)
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
 newtype Penalty a = Penalty { unPenalty :: a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat)
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
-type PenaltyFn = forall a. ( Real a, Fractional a ) => Error a -> Penalty a
+type PenaltyFn a = forall s. Reifies s Tape => Error (Reverse s a) -> Penalty (Reverse s a)
 
 
-data QuadraticPenalty = QuadraticPenalty
-  { extraConstant        :: Double
-  , linearCoefficient    :: Double
-  , quadraticCoefficient :: Double }
+data QuadraticPenalty a = QuadraticPenalty
+  { extraConstant        :: a
+  , linearCoefficient    :: a
+  , quadraticCoefficient :: a }
 
 
-quadraticPenalty :: QuadraticPenalty -> PenaltyFn
+quadraticPenalty :: Mode a => QuadraticPenalty a -> PenaltyFn a
 quadraticPenalty (QuadraticPenalty c b a) (Error x) =
-  Penalty $ fromRational (toRational a) * x * x
-          + fromRational (toRational b) * x
-          + fromRational (toRational c)
+  Penalty $ auto a * x * x
+          + auto b * x
+          + auto c
 
 
-prohibitiveQuadraticPenalty :: QuadraticPenalty
+prohibitiveQuadraticPenalty :: Num a => QuadraticPenalty a
 prohibitiveQuadraticPenalty = QuadraticPenalty 0 0 1000
