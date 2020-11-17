@@ -1,7 +1,7 @@
 {-# LANGUAGE TypeFamilies #-}
 
 
-module Balance.Element.Stack ( Stack (..), StackParams (..) ) where
+module Balance.Element.Stack ( Stack (..), FromStack (..), stack, StackParams (..) ) where
 
 
 import Balance.Element
@@ -11,6 +11,14 @@ import Data.Proxy
 
 
 newtype Stack e = Stack [e]
+
+
+class FromStack e where
+  fromStack :: Stack e -> e
+
+
+stack :: FromStack e => [e] -> e
+stack = fromStack . Stack
 
 
 newtype StackParams e a = StackParams [Params e a]

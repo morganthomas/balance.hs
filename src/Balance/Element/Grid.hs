@@ -3,7 +3,7 @@
 {-# LANGUAGE RankNTypes       #-}
 
 
-module Balance.Element.Grid ( Grid (..), grid, GridParams (..) ) where
+module Balance.Element.Grid ( Grid (..), FromGrid (..), grid, GridParams (..) ) where
 
 
 import Balance.Element
@@ -27,8 +27,12 @@ data Grid e a = Grid
   , gridChildren   :: Map (Coord Int) e }
 
 
-grid :: Mode a => Dimensions Int -> Map (Coord Int) e -> Grid e a
-grid = Grid (quadraticPenalty prohibitiveQuadraticPenalty)
+class FromGrid e where
+  fromGrid :: Grid (e a) a -> e a
+
+
+grid :: FromGrid e => Mode a => Dimensions Int -> Map (Coord Int) (e a) -> e a
+grid dims els = fromGrid $ Grid (quadraticPenalty prohibitiveQuadraticPenalty) dims els
 
 
 data GridParams e a = GridParams

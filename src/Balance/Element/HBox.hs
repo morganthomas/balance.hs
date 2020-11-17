@@ -3,7 +3,7 @@
 {-# LANGUAGE RankNTypes       #-}
 
 
-module Balance.Element.HBox ( HBox (..), hbox, HBoxParams (..) ) where
+module Balance.Element.HBox ( HBox (..), FromHBox (..), hbox, HBoxParams (..) ) where
 
 
 import Balance.Element
@@ -24,8 +24,12 @@ data HBox e a = HBox
   , hboxChildren :: [e] }
 
 
-hbox :: Mode a => [e] -> HBox e a
-hbox = HBox (quadraticPenalty prohibitiveQuadraticPenalty)
+class FromHBox e where
+  fromHBox :: HBox (e a) a -> e a
+
+
+hbox :: FromHBox e => Mode a => [e a] -> e a
+hbox = fromHBox . HBox (quadraticPenalty prohibitiveQuadraticPenalty)
 
 
 data HBoxParams e a = HBoxParams

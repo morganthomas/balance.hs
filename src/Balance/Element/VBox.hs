@@ -3,7 +3,7 @@
 {-# LANGUAGE RankNTypes       #-}
 
 
-module Balance.Element.VBox ( VBox (..), vbox, VBoxParams (..) ) where
+module Balance.Element.VBox ( VBox (..), FromVBox (..), vbox, VBoxParams (..) ) where
 
 
 import Balance.Element
@@ -24,8 +24,12 @@ data VBox e a = VBox
   , vboxChildren :: [e] }
 
 
-vbox :: Mode a => [e] -> VBox e a
-vbox = VBox (quadraticPenalty prohibitiveQuadraticPenalty)
+class FromVBox e where
+  fromVBox :: VBox (e a) a -> e a
+
+
+vbox :: FromVBox e => Mode a => [e a] -> e a
+vbox = fromVBox . VBox (quadraticPenalty prohibitiveQuadraticPenalty)
 
 
 data VBoxParams e a = VBoxParams
