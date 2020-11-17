@@ -34,22 +34,23 @@ newtype Resolution a = Resolution { unResolution :: a }
   deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
-newtype Width a = Width { unWidth :: Length a }
+newtype Width a = Width { unWidth :: a }
   deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
-newtype Height a = Height { unHeight :: Length a }
+newtype Height a = Height { unHeight :: a }
   deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
-data Dimensions a = Dimensions { widthDim :: Width a, heightDim :: Height a }
+data Dimensions a = Dimensions { widthDim :: Width a
+                               , heightDim :: Height a }
 
 
-newtype XOffset a = XOffset { unXOffset :: Length a }
+newtype XOffset a = XOffset { unXOffset :: a }
   deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
-newtype YOffset a = YOffset { unYOffset :: Length a }
+newtype YOffset a = YOffset { unYOffset :: a }
   deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
@@ -71,10 +72,12 @@ measureHeight (YOffset y0) (YOffset y1) = Height (abs (y0 - y1))
 
 -- |A coordinate is specified as a pair of lengths, the length to descend from the top and the
 -- length to move from the left to get to the coordinate.
-data Coord a = Coord { coordX :: XOffset a, coordY :: YOffset a }
+data Coord a = Coord { coordX :: XOffset a
+                     , coordY :: YOffset a }
 
 
-data Rectangle a = Rectangle { rectangleCoord :: Coord a, rectangleDimensions :: Dimensions a }
+data Rectangle a = Rectangle { rectangleCoord :: Coord (Length a)
+                             , rectangleDimensions :: Dimensions (Length a) }
 
 
 measureRectangle :: Num a => Coord a -> Coord a -> Dimensions a

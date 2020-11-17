@@ -18,6 +18,7 @@ extra-source-files:  CHANGELOG.md
 library
   exposed-modules:     Balance.Element
                        Balance.Element.Fill
+                       Balance.Element.Grid
                        Balance.Element.HBox
                        Balance.Element.Rectangular
                        Balance.Element.Stack
@@ -33,6 +34,7 @@ library
                        ad,
                        blank-canvas,
                        colour,
+                       containers,
                        lens,
                        reflection
   hs-source-dirs:      src
