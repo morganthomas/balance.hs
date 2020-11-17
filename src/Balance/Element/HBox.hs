@@ -48,7 +48,8 @@ instance RectangularElement e => Element (HBox e a) where
   render (HBox _ es) (HBoxParams ps _) surface = forM_ (zip es ps) $ \(e,p) -> render e p surface
 
 
-verticalError :: RectangularElement e => Num a
+verticalError :: RectangularElement e
+              => Num a
               => HBox e a
               -> forall s. Reifies s Tape
               => Rectangle (Reverse s a)
@@ -62,7 +63,8 @@ verticalError hb rect childParams =
           + unLength (abs . unYOffset $ far rect - far childRect)
 
 
-hboxError :: RectangularElement e => Num a 
+hboxError :: RectangularElement e
+          => Num a 
           => HBox e a 
           -> forall s. Reifies s Tape
           => HBoxParams e (Reverse s a)
@@ -85,7 +87,8 @@ hboxError hb (HBoxParams (firstChild:secondChild:children) rect) =
   in firstError + otherErrors
 
 
-hboxError' :: RectangularElement e => Num a
+hboxError' :: RectangularElement e
+           => Num a
            => HBox e a
            -> forall s. Reifies s Tape
            => Params e (Reverse s a)

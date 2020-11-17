@@ -31,7 +31,8 @@ import Numeric.AD.Internal.Reverse (Tape, Reverse)
 
 data FillElement a = FillElement
   { fillElementPenalty :: forall s. Reifies s Tape
-                       => FillElementParams (Reverse s a) -> Penalty (Reverse s a)
+                       => FillElementParams (Reverse s a)
+                       -> Penalty (Reverse s a)
   , fillElementColor   :: Maybe (Colour Double) }
 
 
@@ -53,40 +54,56 @@ instance RectangularElement (FillElement a) where
 
 
 horizontallyRigidError :: ( Mode a, Scalar a ~ Double, Reifies s Tape )
-                     => Width (Length Double) -> FillElementParams (Reverse s a) -> Error (Reverse s a)
+                       => Width (Length Double)
+                       -> FillElementParams (Reverse s a)
+                       -> Error (Reverse s a)
 horizontallyRigidError ideal (FillElementParams rect) =
   Error . abs . unLength . unWidth $ (fmap (auto . auto) <$> ideal) - widthDim (rectangleDimensions rect)
 
 
 fillHorizontallyRigid :: ( Mode a, Scalar a ~ Double )
-                      => PenaltyFn a -> Width (Length Double) -> Maybe (Colour Double) -> FillElement a
+                      => PenaltyFn a
+                      -> Width (Length Double)
+                      -> Maybe (Colour Double)
+                      -> FillElement a
 fillHorizontallyRigid pen ideal = FillElement (pen . horizontallyRigidError ideal)
 
 
 fillHorizontallyVeryRigid :: ( Mode a, Scalar a ~ Double )
-                          => Width (Length Double) -> Maybe (Colour Double) -> FillElement a
+                          => Width (Length Double)
+                          -> Maybe (Colour Double)
+                          -> FillElement a
 fillHorizontallyVeryRigid = fillHorizontallyRigid (quadraticPenalty prohibitiveQuadraticPenalty)
 
 
 verticallyRigidError :: ( Mode a, Scalar a ~ Double, Reifies s Tape )
-                     => Height (Length Double) -> FillElementParams (Reverse s a) -> Error (Reverse s a)
+                     => Height (Length Double)
+                     -> FillElementParams (Reverse s a)
+                     -> Error (Reverse s a)
 verticallyRigidError ideal (FillElementParams rect) =
   Error . abs . unLength . unHeight $ (Length . auto . auto . unLength <$> ideal)
                                     - heightDim (rectangleDimensions rect)
 
 
 fillVerticallyRigid :: ( Mode a, Scalar a ~ Double )
-                    => PenaltyFn a -> Height (Length Double) -> Maybe (Colour Double) -> FillElement a
+                    => PenaltyFn a
+                    -> Height (Length Double)
+                    -> Maybe (Colour Double)
+                    -> FillElement a
 fillVerticallyRigid pen ideal = FillElement (pen . verticallyRigidError ideal)
 
 
 fillVerticallyVeryRigid :: ( Mode a, Scalar a ~ Double )
-                        => Height (Length Double) -> Maybe (Colour Double) -> FillElement a
+                        => Height (Length Double)
+                        -> Maybe (Colour Double)
+                        -> FillElement a
 fillVerticallyVeryRigid = fillVerticallyRigid (quadraticPenalty prohibitiveQuadraticPenalty)
 
 
 rigidError :: ( Mode a, Scalar a ~ Double, Reifies s Tape )
-           => Dimensions (Length Double) -> FillElementParams (Reverse s a) -> Error (Reverse s a)
+           => Dimensions (Length Double)
+           -> FillElementParams (Reverse s a)
+           -> Error (Reverse s a)
 rigidError ideal (FillElementParams rect) =
   Error $ abs (unLength . unWidth  $ (Length . auto . auto . unLength <$> widthDim  ideal)
                                    - widthDim  (rectangleDimensions rect))
@@ -95,14 +112,21 @@ rigidError ideal (FillElementParams rect) =
 
 
 fillRigid :: ( Mode a, Scalar a ~ Double )
-          => PenaltyFn a -> Dimensions (Length Double) -> Maybe (Colour Double) -> FillElement a
+          => PenaltyFn a
+          -> Dimensions (Length Double)
+          -> Maybe (Colour Double)
+          -> FillElement a
 fillRigid pen ideal = FillElement (pen . rigidError ideal)
 
 
 fillVeryRigid :: ( Mode a, Scalar a ~ Double )
-              => Dimensions (Length Double) -> Maybe (Colour Double) -> FillElement a
+              => Dimensions (Length Double)
+              -> Maybe (Colour Double)
+              -> FillElement a
 fillVeryRigid = fillRigid (quadraticPenalty prohibitiveQuadraticPenalty)
 
 
-fillFlex :: Num a => Maybe (Colour Double) -> FillElement a
+fillFlex :: Num a
+         => Maybe (Colour Double)
+         -> FillElement a
 fillFlex = FillElement (const 0)

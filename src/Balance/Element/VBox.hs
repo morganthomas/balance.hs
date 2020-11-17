@@ -48,7 +48,8 @@ instance RectangularElement e => Element (VBox e a) where
   render (VBox _ es) (VBoxParams ps _) surface = forM_ (zip es ps) $ \(e,p) -> render e p surface
 
 
-horizontalError :: RectangularElement e => Num a
+horizontalError :: RectangularElement e
+                => Num a
                 => VBox e a
                 -> forall s. Reifies s Tape
                 => Rectangle (Reverse s a)
@@ -62,7 +63,8 @@ horizontalError vb rect childParams =
           + unLength (abs . unXOffset $ far rect - far childRect)
 
 
-vboxError :: RectangularElement e => Num a
+vboxError :: RectangularElement e
+          => Num a
           => VBox e a
           -> forall s. Reifies s Tape
           => VBoxParams e (Reverse s a)
@@ -85,7 +87,8 @@ vboxError vb (VBoxParams (firstChild:secondChild:children) rect) =
   in firstError + otherErrors
 
 
-vboxError' :: RectangularElement e => Num a
+vboxError' :: RectangularElement e
+           => Num a
            => VBox e a
            -> forall s. Reifies s Tape
            => Params e (Reverse s a)
