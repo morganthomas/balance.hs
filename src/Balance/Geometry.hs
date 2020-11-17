@@ -74,6 +74,7 @@ measureHeight (YOffset y0) (YOffset y1) = Height (abs (y0 - y1))
 -- length to move from the left to get to the coordinate.
 data Coord a = Coord { coordX :: XOffset a
                      , coordY :: YOffset a }
+  deriving (Eq, Ord)
 
 
 data Rectangle a = Rectangle { rectangleCoord :: Coord (Length a)
