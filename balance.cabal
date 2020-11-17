@@ -21,6 +21,7 @@ library
                        Balance.Element.HBox
                        Balance.Element.Rectangular
                        Balance.Element.Stack
+                       Balance.Element.VBox
                        Balance.Geometry
                        Balance.Penalty
                        Balance.Surface

@@ -64,7 +64,9 @@ verticalError hb rect childParams =
 
 hboxError :: RectangularElement e => Num a 
           => HBox e a 
-          -> forall s. Reifies s Tape => HBoxParams e (Reverse s a) -> Error (Reverse s a)
+          -> forall s. Reifies s Tape
+          => HBoxParams e (Reverse s a)
+          -> Error (Reverse s a)
 hboxError _ (HBoxParams [] _) = 0
 hboxError hb (HBoxParams [child] rect) =
   let childRect = view (boundingBox (childPxy hb)) child 
