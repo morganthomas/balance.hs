@@ -48,7 +48,20 @@ instance RectangularElement e => Element (HBox e a) where
   render (HBox _ es) (HBoxParams ps _) surface = forM_ (zip es ps) $ \(e,p) -> render e p surface
 
 
--- TODO: vertical error
+verticalError :: RectangularElement e => Num a
+              => HBox e a
+              -> forall s. Reifies s Tape
+              => Rectangle (Reverse s a)
+              -> Params e (Reverse s a)
+              -> Error (Reverse s a)
+verticalError hb rect childParams =
+  let childRect = view (boundingBox (childPxy hb)) childParams
+      y = coordY . rectangleCoord
+      far r = farY (y r) (heightDim (rectangleDimensions r)) in
+    Error $ unLength (abs . unYOffset $ y rect - y childRect)
+          + unLength (abs . unYOffset $ far rect - far childRect)
+
+
 hboxError :: RectangularElement e => Num a 
           => HBox e a 
           -> forall s. Reifies s Tape => HBoxParams e (Reverse s a) -> Error (Reverse s a)
@@ -57,14 +70,15 @@ hboxError hb (HBoxParams [child] rect) =
   let childRect = view (boundingBox (childPxy hb)) child 
       x = coordX . rectangleCoord
       w = widthDim . rectangleDimensions in
-   Error $
-      abs (unLength . unXOffset $ x rect - x childRect)
-    + abs (unLength $ unXOffset (farX (x rect) (w rect))
-                    - unXOffset (farX (x childRect) (w childRect)))
+      Error (abs . unLength . unXOffset $ x rect - x childRect)
+    + Error (abs . unLength $ unXOffset (farX (x rect) (w rect))
+                            - unXOffset (farX (x childRect) (w childRect)))
+    + verticalError hb rect child
 hboxError hb (HBoxParams (firstChild:secondChild:children) rect) =
   let firstChildRect = view (boundingBox (childPxy hb)) firstChild
       x = unXOffset . coordX . rectangleCoord
-      firstError = Error . unLength . abs $ x rect - x firstChildRect
+      firstError = (Error . unLength . abs $ x rect - x firstChildRect)
+                 + verticalError hb rect firstChild
       otherErrors = hboxError' hb firstChild secondChild children rect
   in firstError + otherErrors
 
@@ -81,19 +95,21 @@ hboxError' hb prevChild lastChild [] rect =
   let prevChildRect = view (boundingBox (childPxy hb)) prevChild
       lastChildRect = view (boundingBox (childPxy hb)) lastChild
       far r = farX (coordX (rectangleCoord r)) (widthDim (rectangleDimensions r))
+      vertError = verticalError hb rect lastChild
       innerEdgeError = Error . unLength . abs . unXOffset $ far rect - far lastChildRect
       outerEdgeError = Error . unLength . unWidth $ measureWidth (far prevChildRect) (coordX (rectangleCoord lastChildRect))
-  in innerEdgeError + outerEdgeError
+  in vertError + innerEdgeError + outerEdgeError
 hboxError' hb prevChild child (nextChild:children) rect =
   let prevChildRect = view (boundingBox (childPxy hb)) prevChild
       childRect = view (boundingBox (childPxy hb)) child
       nextChildRect = view (boundingBox (childPxy hb)) nextChild
       far r = farX (coordX (rectangleCoord r)) (widthDim (rectangleDimensions r))
       x = coordX . rectangleCoord
+      vertError = verticalError hb rect child
       leftError = Error . unLength . unWidth $ measureWidth (far prevChildRect) (x childRect)
       rightError = Error . unLength . unWidth $ measureWidth (far childRect) (x nextChildRect)
       otherErrors = hboxError' hb child nextChild children rect
-  in leftError + rightError + otherErrors
+  in vertError + leftError + rightError + otherErrors
 
 
 instance RectangularElement e => RectangularElement (HBox e a) where
