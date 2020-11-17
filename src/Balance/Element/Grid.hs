@@ -3,7 +3,7 @@
 {-# LANGUAGE RankNTypes       #-}
 
 
-module Balance.Element.Grid ( Grid (..), FromGrid (..), grid, GridParams (..) ) where
+module Balance.Element.Grid ( Grid (..), FromGrid (..), grid, GridParams (..), edgeBelow, edgeAbove ) where
 
 
 import Balance.Element
@@ -11,11 +11,11 @@ import Balance.Element.Rectangular
 import Balance.Geometry
 import Balance.Penalty
 
-import Control.Lens hiding (children)
+--import Control.Lens hiding (children)
 import Data.Map (Map)
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
-import Data.Proxy
+--import Data.Proxy
 import Data.Reflection (Reifies)
 import Numeric.AD (Mode)
 import Numeric.AD.Internal.Reverse (Reverse, Tape)
@@ -42,8 +42,8 @@ data GridParams e a = GridParams
   , gridBoundingBox    :: Rectangle a }
 
 
-childPxy :: Grid e a -> Proxy e
-childPxy _ = Proxy
+--childPxy :: Grid e a -> Proxy e
+--childPxy _ = Proxy
 
 
 edgeBelow :: RectangularElement e

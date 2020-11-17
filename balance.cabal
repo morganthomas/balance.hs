@@ -22,6 +22,7 @@ library
                        Balance.Element.HBox
                        Balance.Element.Rectangular
                        Balance.Element.Stack
+                       Balance.Element.Std
                        Balance.Element.VBox
                        Balance.Geometry
                        Balance.Penalty
@@ -35,6 +36,7 @@ library
                        blank-canvas,
                        colour,
                        containers,
+                       data-fix,
                        lens,
                        reflection
   hs-source-dirs:      src
