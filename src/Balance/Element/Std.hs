@@ -10,14 +10,16 @@ module Balance.Element.Std
 
 import Balance.Element
 import Balance.Element.Fill
-import Balance.Element.Grid
+--import Balance.Element.Grid
 import Balance.Element.HBox
 import Balance.Element.Rectangular
 import Balance.Element.Stack
 import Balance.Element.VBox
 import Balance.Geometry
 
+import Control.Lens
 import Data.Fix
+import Data.Proxy
 import Numeric.AD (Mode)
 
 
@@ -59,3 +61,30 @@ instance RectangularElement e => Element (StdElF a e) where
   render (StackEl e) (StackElParams p) s = render e p s
   render (VBoxEl e)  (VBoxElParams p)  s = render e p s
   render _           _                 _ = error "StdEl param type does not match element type"
+
+
+instance RectangularElement e => RectangularElement (StdElF a e) where
+  boundingBox _ = lens getBoundingBox setBoundingBox
+
+
+fillElPxy :: FillElementParams a -> Proxy (FillElement a)
+fillElPxy _ = Proxy
+
+
+hboxElPxy :: HBoxParams e a -> Proxy (HBox e a)
+hboxElPxy _ = Proxy
+
+
+vboxElPxy :: VBoxParams e a -> Proxy (VBox e a)
+vboxElPxy _ = Proxy
+
+
+getBoundingBox :: RectangularElement e => StdElParams e a -> Rectangle a
+getBoundingBox (FillElParams  p) = p ^. boundingBox (fillElPxy p)
+getBoundingBox (HBoxElParams  p) = p ^. boundingBox (hboxElPxy p)
+getBoundingBox (StackElParams p) = undefined p -- TODO
+getBoundingBox (VBoxElParams p)  = p ^. boundingBox (vboxElPxy p)
+
+
+setBoundingBox :: StdElParams e a -> Rectangle a -> StdElParams e a
+setBoundingBox = undefined

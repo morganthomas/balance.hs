@@ -36,7 +36,7 @@ data FillElement a = FillElement
   , fillElementColor   :: Maybe (Colour Double) }
 
 
-newtype FillElementParams a = FillElementParams { unFillElementParams :: (Rectangle a) }
+newtype FillElementParams a = FillElementParams { unFillElementParams :: Rectangle a }
 
 
 instance Element (FillElement a) where
