@@ -58,3 +58,4 @@ instance RectangularElement e => Element (StdElF a e) where
   render (HBoxEl e)  (HBoxElParams p)  s = render e p s
   render (StackEl e) (StackElParams p) s = render e p s
   render (VBoxEl e)  (VBoxElParams p)  s = render e p s
+  render _           _                 _ = error "StdEl param type does not match element type"
