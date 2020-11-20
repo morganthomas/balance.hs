@@ -54,6 +54,7 @@ instance RectangularElement e => Element (VBox e a) where
 
 horizontalError :: RectangularElement e
                 => Num a
+                => Ord a
                 => VBox e a
                 -> forall s. Reifies s Tape
                 => Rectangle (Reverse s a)
@@ -69,6 +70,7 @@ horizontalError vb rect childParams =
 
 vboxError :: RectangularElement e
           => Num a
+          => Ord a
           => VBox e a
           -> forall s. Reifies s Tape
           => VBoxParams e (Reverse s a)
@@ -93,6 +95,7 @@ vboxError vb (VBoxParams (firstChild:secondChild:children) rect) =
 
 vboxError' :: RectangularElement e
            => Num a
+           => Ord a
            => VBox e a
            -> forall s. Reifies s Tape
            => Params e (Reverse s a)

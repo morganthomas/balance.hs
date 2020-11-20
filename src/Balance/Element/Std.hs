@@ -79,10 +79,15 @@ vboxElPxy :: VBoxParams e a -> Proxy (VBox e a)
 vboxElPxy _ = Proxy
 
 
-getBoundingBox :: RectangularElement e => StdElParams e a -> Rectangle a
+stackElPxy :: StackParams e a -> Proxy e
+stackElPxy _ = Proxy
+
+
+getBoundingBox :: ( Num a, Ord a, RectangularElement e ) => StdElParams e a -> Rectangle a
 getBoundingBox (FillElParams  p) = p ^. boundingBox (fillElPxy p)
 getBoundingBox (HBoxElParams  p) = p ^. boundingBox (hboxElPxy p)
-getBoundingBox (StackElParams p) = undefined p -- TODO
+getBoundingBox (StackElParams p) = minimumBoundingRectangle
+                                 $ (^. boundingBox (stackElPxy p)) <$> unStackParams p
 getBoundingBox (VBoxElParams p)  = p ^. boundingBox (vboxElPxy p)
 
 

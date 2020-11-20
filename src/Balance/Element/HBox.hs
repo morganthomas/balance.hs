@@ -54,6 +54,7 @@ instance RectangularElement e => Element (HBox e a) where
 
 verticalError :: RectangularElement e
               => Num a
+              => Ord a
               => HBox e a
               -> forall s. Reifies s Tape
               => Rectangle (Reverse s a)
@@ -69,6 +70,7 @@ verticalError hb rect childParams =
 
 hboxError :: RectangularElement e
           => Num a 
+          => Ord a
           => HBox e a 
           -> forall s. Reifies s Tape
           => HBoxParams e (Reverse s a)
@@ -93,6 +95,7 @@ hboxError hb (HBoxParams (firstChild:secondChild:children) rect) =
 
 hboxError' :: RectangularElement e
            => Num a
+           => Ord a
            => HBox e a
            -> forall s. Reifies s Tape
            => Params e (Reverse s a)

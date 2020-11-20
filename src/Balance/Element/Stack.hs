@@ -21,7 +21,7 @@ stack :: FromStack e => [e] -> e
 stack = fromStack . Stack
 
 
-newtype StackParams e a = StackParams [Params e a]
+newtype StackParams e a = StackParams { unStackParams :: [Params e a] }
 
 
 instance Element e => Element (Stack e) where
