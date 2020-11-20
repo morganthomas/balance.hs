@@ -53,3 +53,8 @@ instance RectangularElement e => Element (StdElF a e) where
   guess pxy (HBoxEl e)  = HBoxElParams  (guess pxy e)
   guess pxy (StackEl e) = StackElParams (guess pxy e)
   guess pxy (VBoxEl e)  = VBoxElParams  (guess pxy e)
+
+  render (FillEl e)  (FillElParams p)  s = render e p s
+  render (HBoxEl e)  (HBoxElParams p)  s = render e p s
+  render (StackEl e) (StackElParams p) s = render e p s
+  render (VBoxEl e)  (VBoxElParams p)  s = render e p s
