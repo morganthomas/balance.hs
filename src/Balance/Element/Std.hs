@@ -109,12 +109,10 @@ setBoundingBox = undefined
 instance Element (StdEl a) where
   type Params (StdEl a) = StdElParams (StdEl a)
 
-  type PenaltyConstraints (StdEl a) b = 
-    ( b ~ a
-    , Mode a
-    , Ord a
-    , PenaltyConstraints (FillElement a) b
-    , PenaltyConstraints (HBox (StdEl a) a) b
-    , PenaltyConstraints (Stack (StdEl a)) b
-    , PenaltyConstraints (VBox (StdEl a) a) b
-    )
+  -- Unfortunately am manually incorporating all child constraints to avoid infinite recursion
+  type PenaltyConstraints (StdEl a) b = ( b ~ a, Num a, Mode a, Ord a )
+
+  penalty (Fix e) ps = penalty e ps
+
+
+instance RectangularElement (StdEl a) where
