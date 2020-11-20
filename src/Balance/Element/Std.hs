@@ -1,4 +1,7 @@
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 
 module Balance.Element.Std
@@ -42,7 +45,16 @@ data StdElParams e a = FillElParams (FillElementParams a)
 
 instance RectangularElement e => Element (StdElF a e) where
   type Params (StdElF a e) = StdElParams e
-  type PenaltyConstraints (StdElF a e) b = ( b ~ a, Mode a, Ord a, PenaltyConstraints e a )
+
+  type PenaltyConstraints (StdElF a e) b =
+    ( b ~ a
+    , Mode a
+    , Ord a
+    , PenaltyConstraints (FillElement a) b
+    , PenaltyConstraints (HBox e a) b
+    , PenaltyConstraints (Stack e) b
+    , PenaltyConstraints (VBox e a) b
+    , PenaltyConstraints e a )
 
   penalty (FillEl e)  (FillElParams ps)  = penalty e ps
 --  penalty (GridEl e)  (GridElParams ps) = penalty e ps
@@ -94,5 +106,15 @@ setBoundingBox :: StdElParams e a -> Rectangle a -> StdElParams e a
 setBoundingBox = undefined
 
 
---instance RectangularElement e => Element StdEl where
---  
+instance Element (StdEl a) where
+  type Params (StdEl a) = StdElParams (StdEl a)
+
+  type PenaltyConstraints (StdEl a) b = 
+    ( b ~ a
+    , Mode a
+    , Ord a
+    , PenaltyConstraints (FillElement a) b
+    , PenaltyConstraints (HBox (StdEl a) a) b
+    , PenaltyConstraints (Stack (StdEl a)) b
+    , PenaltyConstraints (VBox (StdEl a) a) b
+    )
