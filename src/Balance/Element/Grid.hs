@@ -3,7 +3,7 @@
 {-# LANGUAGE RankNTypes       #-}
 
 
-module Balance.Element.Grid ( Grid (..), FromGrid (..), grid, GridParams (..), edgeBelow, edgeAbove ) where
+module Balance.Element.Grid ( Grid (..), FromGrid (..), grid, GridParams (..) ) where
 
 
 import Balance.Element
@@ -54,7 +54,7 @@ edgeBelow :: RectangularElement e
           => Maybe (GridParams e (Reverse s a)
                  -> YOffset (Length (Reverse s a)))
 edgeBelow g (Coord x y) =
-  let xlim = XOffset . unWidth . widthDim $ gridSize g
+  let xlim = XOffset . unWidth  . widthDim  $ gridSize g
       ylim = YOffset . unHeight . heightDim $ gridSize g
   in if x >= 0 && x < xlim && y >= 0 && y < ylim
      then
@@ -76,14 +76,57 @@ edgeAbove :: RectangularElement e
           => Maybe (GridParams e (Reverse s a)
                  -> YOffset (Length (Reverse s a)))
 edgeAbove g (Coord x y) =
-  let xlim = XOffset . unWidth . widthDim $ gridSize g
+  let xlim = XOffset . unWidth  . widthDim  $ gridSize g
       ylim = YOffset . unHeight . heightDim $ gridSize g
   in if x >= 0 && x < xlim && y >= 0 && y < ylim
      then
-       if y == 1
+       if y == 0
        then Just $ \params -> coordY (rectangleCoord (gridBoundingBox params))
        else case M.lookup (Coord x (y-1)) (gridChildren g) of
               Just _ -> Just $ \params -> fromMaybe (error "Balance.Element.Grid.edgeAbove: no row offset")
                                           $ M.lookup y (gridRowOffsets params)
               Nothing -> edgeAbove g (Coord x (y-1))
+     else Nothing
+
+
+edgeLeft :: RectangularElement e
+         => Num a
+         => Grid e a
+         -> Coord Int
+         -> forall s. Reifies s Tape
+         => Maybe (GridParams e (Reverse s a)
+                -> XOffset (Length (Reverse s a)))
+edgeLeft g (Coord x y) =
+  let xlim = XOffset . unWidth  . widthDim  $ gridSize g
+      ylim = YOffset . unHeight . heightDim $ gridSize g
+  in if x >= 0 && x < xlim && y >= 0 && y < ylim
+     then
+       if x == 0
+       then Just $ \params -> coordX (rectangleCoord (gridBoundingBox params))
+       else case M.lookup (Coord (x-1) y) (gridChildren g) of
+              Just _ -> Just $ \params -> fromMaybe (error "Balance.Element.Grid.edgeLeft: no column offset")
+                                          $ M.lookup (x-1) (gridColOffsets params)
+              Nothing -> edgeLeft g (Coord (x-1) y)
+       else Nothing
+
+
+edgeRight :: RectangularElement e
+          => Num a
+          => Grid e a
+          -> Coord Int
+          -> forall s. Reifies s Tape
+          => Maybe (GridParams e (Reverse s a)
+                 -> XOffset (Length (Reverse s a)))
+edgeRight g (Coord x y) =
+  let xlim = XOffset . unWidth  . widthDim  $ gridSize g
+      ylim = YOffset . unHeight . heightDim $ gridSize g
+  in if x >= 0 && x < xlim && y >= 0 && y < ylim
+     then
+       if x+1 == xlim
+       then Just $ \params -> farX (coordX (rectangleCoord (gridBoundingBox params)))
+                                   (widthDim (rectangleDimensions (gridBoundingBox params)))
+       else case M.lookup (Coord (x+1) y) (gridChildren g) of
+              Just _ -> Just $ \params -> fromMaybe (error "Balance.Element.Grid.edgeRight: no column offset")
+                                           $ M.lookup (x+1) (gridColOffsets params)
+              Nothing -> edgeRight g (Coord (x+1) y)
      else Nothing

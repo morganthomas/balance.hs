@@ -91,14 +91,16 @@ stackElPxy :: StackParams e a -> Proxy (Stack e)
 stackElPxy _ = Proxy
 
 
-getBoundingBox :: ( Num a, Ord a, RectangularElement e ) => StdElParams e a -> Rectangle a
+getBoundingBox :: ( Num a, Ord a, RectangularElement e )
+               => StdElParams e a -> Rectangle a
 getBoundingBox (FillElParams  p) = p ^. boundingBox (fillElPxy p)
 getBoundingBox (HBoxElParams  p) = p ^. boundingBox (hboxElPxy p)
 getBoundingBox (StackElParams p) = p ^. boundingBox (stackElPxy p)
 getBoundingBox (VBoxElParams p)  = p ^. boundingBox (vboxElPxy p)
 
 
-setBoundingBox :: ( Num a, Ord a, RectangularElement e ) => StdElParams e a -> Rectangle a -> StdElParams e a
+setBoundingBox :: ( Num a, Ord a, RectangularElement e )
+               => StdElParams e a -> Rectangle a -> StdElParams e a
 setBoundingBox (FillElParams  p) bb = FillElParams  $ set (boundingBox (fillElPxy  p)) bb p
 setBoundingBox (HBoxElParams  p) bb = HBoxElParams  $ set (boundingBox (hboxElPxy  p)) bb p
 setBoundingBox (StackElParams p) bb = StackElParams $ set (boundingBox (stackElPxy p)) bb p
