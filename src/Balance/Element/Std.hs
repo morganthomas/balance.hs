@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE UndecidableInstances #-}
 
 
 module Balance.Element.Std
@@ -50,10 +49,7 @@ instance RectangularElement e => Element (StdElF a e) where
     ( b ~ a
     , Mode a
     , Ord a
-    , PenaltyConstraints (FillElement a) b
-    , PenaltyConstraints (HBox e a) b
-    , PenaltyConstraints (Stack e) b
-    , PenaltyConstraints (VBox e a) b
+    , Num a
     , PenaltyConstraints e a )
 
   penalty (FillEl e)  (FillElParams ps)  = penalty e ps
@@ -108,11 +104,13 @@ setBoundingBox = undefined
 
 instance Element (StdEl a) where
   type Params (StdEl a) = StdElParams (StdEl a)
-
-  -- Unfortunately am manually incorporating all child constraints to avoid infinite recursion
   type PenaltyConstraints (StdEl a) b = ( b ~ a, Num a, Mode a, Ord a )
-
-  penalty (Fix e) ps = penalty e ps
+  penalty (Fix e) = penalty e
+  guess pxy (Fix e) = guess pxy e
+  render (Fix e) = render e
 
 
 instance RectangularElement (StdEl a) where
+  boundingBox pxy = boundingBox (f pxy)
+    where f :: Proxy (StdEl a) -> Proxy (StdElF a (StdEl a))
+          f _ = Proxy
