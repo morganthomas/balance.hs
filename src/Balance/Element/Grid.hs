@@ -12,6 +12,7 @@ import Balance.Geometry
 import Balance.Penalty
 
 import Control.Lens hiding (children)
+import Control.Monad (forM_)
 import Data.Map (Map)
 import qualified Data.Map as M
 import Data.Maybe (fromMaybe)
@@ -67,6 +68,8 @@ instance RectangularElement e => Element (Grid e a) where
                                 . YOffset
                                <$> [0..numRowOffsets-1]
     in GridParams subguesses colGuesses rowGuesses bb
+  render g ps surface = forM_ (zip (M.elems (gridChildren g)) (M.elems (gridChildrenParams ps)))
+                         $ \(e,p) -> render e p surface
 
 
 childPxy :: Grid e a -> Proxy e
