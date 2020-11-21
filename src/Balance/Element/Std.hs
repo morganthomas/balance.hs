@@ -98,8 +98,11 @@ getBoundingBox (StackElParams p) = p ^. boundingBox (stackElPxy p)
 getBoundingBox (VBoxElParams p)  = p ^. boundingBox (vboxElPxy p)
 
 
-setBoundingBox :: StdElParams e a -> Rectangle a -> StdElParams e a
-setBoundingBox = undefined
+setBoundingBox :: ( Num a, Ord a, RectangularElement e ) => StdElParams e a -> Rectangle a -> StdElParams e a
+setBoundingBox (FillElParams  p) bb = FillElParams  $ set (boundingBox (fillElPxy  p)) bb p
+setBoundingBox (HBoxElParams  p) bb = HBoxElParams  $ set (boundingBox (hboxElPxy  p)) bb p
+setBoundingBox (StackElParams p) bb = StackElParams $ set (boundingBox (stackElPxy p)) bb p
+setBoundingBox (VBoxElParams  p) bb = VBoxElParams  $ set (boundingBox (vboxElPxy  p)) bb p
 
 
 instance Element (StdEl a) where
