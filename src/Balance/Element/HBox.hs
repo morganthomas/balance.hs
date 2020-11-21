@@ -44,8 +44,8 @@ childPxy _ = Proxy
 instance RectangularElement e => Element (HBox e a) where
   type Params (HBox e a) = HBoxParams e
   type PenaltyConstraints (HBox e a) b = ( b ~ a, PenaltyConstraints e a, Mode a, Ord a )
-  penalty hb = \ps@(HBoxParams cps _) -> sum (zipWith penalty (hboxChildren hb) cps)
-                                       + hboxPenalty hb (hboxError hb ps)
+  penalty hb ps@(HBoxParams cps _) = sum (zipWith penalty (hboxChildren hb) cps)
+                                   + hboxPenalty hb (hboxError hb ps)
   guess pxy hb@(HBox _ es) =
     let subguesses = guess pxy <$> es
     in HBoxParams subguesses (minimumBoundingRectangle (view (boundingBox (childPxy hb)) <$> subguesses))

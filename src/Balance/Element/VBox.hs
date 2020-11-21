@@ -44,8 +44,8 @@ childPxy _ = Proxy
 instance RectangularElement e => Element (VBox e a) where
   type Params (VBox e a) = VBoxParams e
   type PenaltyConstraints (VBox e a) b = ( b ~ a, PenaltyConstraints e a, Mode a, Ord a )
-  penalty vb = \ps@(VBoxParams cps _) -> sum (zipWith penalty (vboxChildren vb) cps)
-                                       + vboxPenalty vb (vboxError vb ps)
+  penalty vb ps@(VBoxParams cps _) = sum (zipWith penalty (vboxChildren vb) cps)
+                                   + vboxPenalty vb (vboxError vb ps)
   guess pxy vb@(VBox _ es) =
     let subguesses = guess pxy <$> es
     in VBoxParams subguesses (minimumBoundingRectangle (view (boundingBox (childPxy vb)) <$> subguesses))

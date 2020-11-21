@@ -42,8 +42,20 @@ data GridParams e a = GridParams
   , gridBoundingBox    :: Rectangle a }
 
 
---childPxy :: Grid e a -> Proxy e
---childPxy _ = Proxy
+instance RectangularElement e => Element (Grid e a) where
+  type Params (Grid e a) = GridParams e
+  type PenaltyConstraints (Grid e a) b = ( b ~ a, PenaltyConstraints e a, Mode a, Ord a )
+  penalty g ps = sum (zipWith penalty (M.elems (gridChildren g)) (M.elems (gridChildrenParams ps)))
+               + gridPenalty g (gridError g ps)
+
+
+gridError :: RectangularElement e
+          => Num a
+          => Ord a
+          => Grid e a 
+          -> forall s. Reifies s Tape
+          => GridParams e (Reverse s a) -> Error (Reverse s a)
+gridError = undefined
 
 
 edgeBelow :: RectangularElement e
