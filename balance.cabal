@@ -26,6 +26,7 @@ library
                        Balance.Element.VBox
                        Balance.Geometry
                        Balance.Penalty
+                       Balance.Prelude
                        Balance.Surface
                        Balance.Surface.BlankCanvas
   ghc-options: -Wall -Wcompat -fwarn-redundant-constraints -fwarn-incomplete-uni-patterns -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-identities

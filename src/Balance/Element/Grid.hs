@@ -10,6 +10,7 @@ import Balance.Element
 import Balance.Element.Rectangular
 import Balance.Geometry
 import Balance.Penalty
+import Balance.Prelude
 
 import Control.Lens hiding (children)
 import Control.Monad (forM_)
@@ -83,9 +84,8 @@ gridError :: RectangularElement e
           -> forall s. Reifies s Tape
           => GridParams e (Reverse s a)
           -> Error (Reverse s a)
-gridError g ps = fromMaybe (error "gridError failed") $ do
-  fs <- sequence (childError g <$> M.keys (gridChildren g))
-  return . sum $ ($ ps) <$> fs
+gridError g ps = sum . fromMaybe (error "gridError failed") $
+  ($ ps) <$$> sequence (childError g <$> M.keys (gridChildren g))
 
 
 childError :: RectangularElement e
