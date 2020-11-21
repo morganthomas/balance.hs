@@ -81,8 +81,22 @@ gridError :: RectangularElement e
           => Ord a
           => Grid e a 
           -> forall s. Reifies s Tape
-          => GridParams e (Reverse s a) -> Error (Reverse s a)
-gridError = undefined
+          => GridParams e (Reverse s a)
+          -> Error (Reverse s a)
+gridError g ps = fromMaybe (error "gridError failed") $ do
+  fs <- sequence (childError g <$> M.keys (gridChildren g))
+  return . sum $ ($ ps) <$> fs
+
+
+childError :: RectangularElement e
+           => Num a
+           => Ord a
+           => Grid e a
+           -> Coord Int
+           -> forall s. Reifies s Tape
+           => Maybe (GridParams e (Reverse s a)
+                  -> Error (Reverse s a))
+childError g xy = undefined
 
 
 edgeBelow :: RectangularElement e
