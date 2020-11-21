@@ -37,10 +37,6 @@ data VBoxParams e a = VBoxParams
   , vboxBoundingBox    :: Rectangle a }
 
 
-childPxy :: VBox e a -> Proxy e
-childPxy _ = Proxy
-
-
 instance RectangularElement e => Element (VBox e a) where
   type Params (VBox e a) = VBoxParams e
   type PenaltyConstraints (VBox e a) b = ( b ~ a, PenaltyConstraints e a, Mode a, Ord a )
@@ -50,6 +46,15 @@ instance RectangularElement e => Element (VBox e a) where
     let subguesses = guess pxy <$> es
     in VBoxParams subguesses (minimumBoundingRectangle (view (boundingBox (childPxy vb)) <$> subguesses))
   render (VBox _ es) (VBoxParams ps _) surface = forM_ (zip es ps) $ \(e,p) -> render e p surface
+
+
+instance RectangularElement e => RectangularElement (VBox e a) where
+  boundingBox _ = lens (\(VBoxParams _ bb) -> bb)
+                       (\(VBoxParams ps _) bb -> VBoxParams ps bb)
+
+
+childPxy :: VBox e a -> Proxy e
+childPxy _ = Proxy
 
 
 horizontalError :: RectangularElement e
@@ -122,8 +127,3 @@ vboxError' vb prevChild child (nextChild:children) rect =
       downError = Error . unLength . unHeight $ measureHeight (far childRect) (y nextChildRect)
       otherErrors = vboxError' vb child nextChild children rect
   in horizError + upError + downError + otherErrors
-
-
-instance RectangularElement e => RectangularElement (VBox e a) where
-  boundingBox _ = lens (\(VBoxParams _ bb) -> bb)
-                       (\(VBoxParams ps _) bb -> VBoxParams ps bb)

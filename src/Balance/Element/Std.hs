@@ -50,6 +50,7 @@ instance RectangularElement e => Element (StdElF a e) where
     , Mode a
     , Ord a
     , Num a
+    , Fractional a
     , PenaltyConstraints e a )
 
   penalty (FillEl e)  (FillElParams ps)  = penalty e ps
@@ -109,7 +110,7 @@ setBoundingBox (VBoxElParams  p) bb = VBoxElParams  $ set (boundingBox (vboxElPx
 
 instance Element (StdEl a) where
   type Params (StdEl a) = StdElParams (StdEl a)
-  type PenaltyConstraints (StdEl a) b = ( b ~ a, Num a, Mode a, Ord a )
+  type PenaltyConstraints (StdEl a) b = ( b ~ a, Num a, Fractional a, Mode a, Ord a )
   penalty (Fix e) = penalty e
   guess pxy (Fix e) = guess pxy e
   render (Fix e) = render e

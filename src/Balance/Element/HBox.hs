@@ -52,6 +52,11 @@ instance RectangularElement e => Element (HBox e a) where
   render (HBox _ es) (HBoxParams ps _) surface = forM_ (zip es ps) $ \(e,p) -> render e p surface
 
 
+instance RectangularElement e => RectangularElement (HBox e a) where
+  boundingBox _ = lens (\(HBoxParams _ bb) -> bb)
+                       (\(HBoxParams ps _) bb -> HBoxParams ps bb)
+
+
 verticalError :: RectangularElement e
               => Num a
               => Ord a
@@ -122,8 +127,3 @@ hboxError' hb prevChild child (nextChild:children) rect =
       rightError = Error . unLength . unWidth $ measureWidth (far childRect) (x nextChildRect)
       otherErrors = hboxError' hb child nextChild children rect
   in vertError + leftError + rightError + otherErrors
-
-
-instance RectangularElement e => RectangularElement (HBox e a) where
-  boundingBox _ = lens (\(HBoxParams _ bb) -> bb)
-                       (\(HBoxParams ps _) bb -> HBoxParams ps bb)

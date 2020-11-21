@@ -47,11 +47,11 @@ data Dimensions a = Dimensions { widthDim :: Width a
 
 
 newtype XOffset a = XOffset { unXOffset :: a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
+  deriving (Eq, Show, Read, Ord, Num, Enum, Integral, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
 newtype YOffset a = YOffset { unYOffset :: a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
+  deriving (Eq, Show, Read, Ord, Num, Enum, Integral, Real, Fractional, RealFrac, Floating, RealFloat, Functor)
 
 
 farX :: Num a => XOffset a -> Width a -> XOffset a
