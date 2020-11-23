@@ -1,4 +1,7 @@
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE DeriveFunctor        #-}
+{-# LANGUAGE StandaloneDeriving   #-}
+{-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 
 module Balance.Element.Stack ( Stack (..), FromStack (..), stack, StackParams (..) ) where
@@ -25,6 +28,8 @@ stack = fromStack . Stack
 
 
 newtype StackParams e a = StackParams [Params e a]
+
+deriving instance Functor (Params e) => Functor (StackParams e)
 
 
 instance Element e => Element (Stack e) where
