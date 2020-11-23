@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFunctor    #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE TypeFamilies     #-}
@@ -37,6 +38,7 @@ data Fill a = Fill
 
 
 newtype FillParams a = FillParams { unFillParams :: Rectangle a }
+  deriving Functor
 
 
 instance Element (Fill a) where

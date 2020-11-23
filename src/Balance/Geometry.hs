@@ -21,6 +21,8 @@ module Balance.Geometry
   ) where
 
 
+import Balance.Prelude
+
 import Data.List (foldl')
 
 
@@ -44,6 +46,7 @@ newtype Height a = Height { unHeight :: a }
 
 data Dimensions a = Dimensions { widthDim :: Width a
                                , heightDim :: Height a }
+  deriving Functor
 
 
 newtype XOffset a = XOffset { unXOffset :: a }
@@ -74,11 +77,14 @@ measureHeight (YOffset y0) (YOffset y1) = Height (abs (y0 - y1))
 -- length to move from the left to get to the coordinate.
 data Coord a = Coord { coordX :: XOffset a
                      , coordY :: YOffset a }
-  deriving (Eq, Ord)
+  deriving (Eq, Ord, Functor)
 
 
 data Rectangle a = Rectangle { rectangleCoord :: Coord (Length a)
                              , rectangleDimensions :: Dimensions (Length a) }
+
+instance Functor Rectangle where
+  fmap f (Rectangle c d) = Rectangle (f <$$> c) (f <$$> d)
 
 
 measureRectangle :: Num a => Coord a -> Coord a -> Dimensions a
