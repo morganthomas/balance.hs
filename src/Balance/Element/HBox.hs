@@ -1,6 +1,9 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies     #-}
-{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE DeriveFunctor        #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE StandaloneDeriving   #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 
 module Balance.Element.HBox ( HBox (..), FromHBox (..), hbox, HBoxParams (..) ) where
@@ -35,6 +38,8 @@ hbox = fromHBox . HBox (quadraticPenalty prohibitiveQuadraticPenalty)
 data HBoxParams e a = HBoxParams
   { hboxChildrenParams :: [Params e a]
   , hboxBoundingBox    :: Rectangle a }
+
+deriving instance Functor (Params e) => Functor (HBoxParams e)
 
 
 childPxy :: HBox e a -> Proxy e
