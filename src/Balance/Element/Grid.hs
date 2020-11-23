@@ -1,6 +1,8 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies     #-}
-{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE TypeFamilies        #-}
+{-# LANGUAGE RankNTypes          #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications    #-}
 
 
 module Balance.Element.Grid ( Grid (..), FromGrid (..), grid, GridParams (..) ) where
@@ -12,7 +14,7 @@ import Balance.Geometry
 import Balance.Penalty
 import Balance.Prelude
 
-import Control.Lens hiding (children)
+import Control.Lens hiding (children, below)
 import Control.Monad (forM_)
 import Data.Map (Map)
 import qualified Data.Map as M
@@ -84,8 +86,8 @@ gridError :: RectangularElement e
           -> forall s. Reifies s Tape
           => GridParams e (Reverse s a)
           -> Error (Reverse s a)
-gridError g ps = sum . fromMaybe (error "gridError failed") $
-  ($ ps) <$$> sequence (childError g <$> M.keys (gridChildren g))
+gridError g ps = sum . fromMaybe (error "Balance.Element.gridError failed") $
+  ($ ps) <$$> sequence (($ Proxy) . ($ Proxy) . childError g <$> M.keys (gridChildren g))
 
 
 childError :: RectangularElement e
@@ -94,9 +96,22 @@ childError :: RectangularElement e
            => Grid e a
            -> Coord Int
            -> forall s. Reifies s Tape
-           => Maybe (GridParams e (Reverse s a)
+           => Proxy s
+           -> Proxy e
+           -> Maybe (GridParams e (Reverse s a)
                   -> Error (Reverse s a))
-childError g xy = undefined
+childError g xy (_ :: Proxy s) (_ :: Proxy e) = do
+  below <- edgeBelow g xy @s
+  above <- edgeAbove g xy @s
+  left  <- edgeLeft  g xy @s
+  right <- edgeRight g xy @s
+  return $ \ps -> fromMaybe (error "Balance.Element.childError failed") $ do
+    childBb <- (^. boundingBox (Proxy :: Proxy e)) <$> M.lookup xy (gridChildrenParams @e ps)
+    let leftErr  = abs . Error . unLength . unXOffset $ left  ps - coordX (rectangleCoord childBb)
+        rightErr = abs . Error . unLength . unXOffset $ right ps - coordX (rectangleCoord childBb)
+        aboveErr = abs . Error . unLength . unYOffset $ above ps - coordY (rectangleCoord childBb)
+        belowErr = abs . Error . unLength . unYOffset $ below ps - coordY (rectangleCoord childBb)
+    return $ leftErr + rightErr + aboveErr + belowErr
 
 
 edgeBelow :: RectangularElement e
