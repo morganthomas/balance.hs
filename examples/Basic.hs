@@ -7,6 +7,7 @@ module Main where
 import Balance.Element
 import Balance.Element.Fill
 import Balance.Element.Std
+import Balance.Geometry
 import Balance.Surface.BlankCanvas
 
 import Control.Monad (forM_)
@@ -26,7 +27,7 @@ options = Options port [] False "." [] False
 main :: IO ()
 main = do
   putStrLn $ "starting balance.hs basic example on port " <> show port
-  let el :: StdEl Double = Fix . FillEl . fillFlex $ Just (sRGB 0.0 0.0 0.0)
+  let el :: StdEl Double = Fix . FillEl . fillVeryRigid (Dimensions 100 100) $ Just (sRGB 0.0 0.0 0.0)
       approximations = optimize el
       maxIterations = 100
   blankCanvas options $ \ctx -> do

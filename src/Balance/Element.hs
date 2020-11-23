@@ -33,4 +33,7 @@ optimize :: Element e
          => Traversable (Params e)
          => e
          -> [Params e a]
-optimize e = gradientDescent (unPenalty . penalty e) (guess Proxy e)
+optimize e = let g = guess Proxy e
+             in case gradientDescent (unPenalty . penalty e) g of
+                  [] -> repeat g
+                  xs -> xs
