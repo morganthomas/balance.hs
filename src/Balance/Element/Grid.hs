@@ -1,8 +1,11 @@
-{-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE TypeFamilies        #-}
-{-# LANGUAGE RankNTypes          #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications    #-}
+{-# LANGUAGE DeriveFunctor        #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
+{-# LANGUAGE StandaloneDeriving   #-}
+{-# LANGUAGE TypeApplications     #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 
 module Balance.Element.Grid ( Grid (..), FromGrid (..), grid, GridParams (..) ) where
@@ -44,6 +47,8 @@ data GridParams e a = GridParams
   , gridColOffsets     :: Map (XOffset Int) (XOffset (Length a))
   , gridRowOffsets     :: Map (YOffset Int) (YOffset (Length a))
   , gridBoundingBox    :: Rectangle a }
+
+deriving instance Functor (Params e) => Functor (GridParams e)
 
 
 instance RectangularElement e => Element (Grid e a) where
