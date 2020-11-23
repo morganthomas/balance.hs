@@ -53,3 +53,17 @@ executable minimal
                        colour,
                        reflection,
                        text
+
+executable basic
+  main-is:             Basic.hs
+  hs-source-dirs:      src, examples
+  ghc-options: -Wall -Wcompat -fwarn-redundant-contrainst -fwarn-incomplete-uni-patterns -fwarn-tabs -fwarn-incomplete-record-updates -fwarn-identities
+  build-depends:       base ^>=4.12.0.0,
+                       ad,
+                       blank-canvas,
+                       containers,
+                       colour,
+                       data-fix,
+                       lens,
+                       reflection,
+                       text
