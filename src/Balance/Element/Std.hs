@@ -1,6 +1,9 @@
+{-# LANGUAGE DeriveFunctor        #-}
 {-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE StandaloneDeriving   #-}
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 
 module Balance.Element.Std
@@ -40,6 +43,8 @@ data StdElParams e a = FillElParams (FillParams a)
                      | HBoxElParams (HBoxParams e a)
                      | StackElParams (StackParams e a)
                      | VBoxElParams (VBoxParams e a)
+
+deriving instance Functor (Params e) => Functor (StdElParams e)
 
 
 instance RectangularElement e => Element (StdElF a e) where
