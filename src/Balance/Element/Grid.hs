@@ -75,6 +75,10 @@ instance RectangularElement e => Element (Grid e a) where
                          $ \(e,p) -> render e p surface
 
 
+instance RectangularElement e => RectangularElement (Grid e a) where
+  boundingBox _ = lens gridBoundingBox (\ps bb -> ps { gridBoundingBox = bb })
+
+
 childPxy :: Grid e a -> Proxy e
 childPxy _ = Proxy
 
