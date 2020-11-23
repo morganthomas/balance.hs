@@ -1,6 +1,9 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeFamilies     #-}
-{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE DeriveFunctor        #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE StandaloneDeriving   #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 
 module Balance.Element.VBox ( VBox (..), FromVBox (..), vbox, VBoxParams (..) ) where
@@ -35,6 +38,8 @@ vbox = fromVBox . VBox (quadraticPenalty prohibitiveQuadraticPenalty)
 data VBoxParams e a = VBoxParams
   { vboxChildrenParams :: [Params e a]
   , vboxBoundingBox    :: Rectangle a }
+
+deriving instance Functor (Params e) => Functor (VBoxParams e)
 
 
 instance RectangularElement e => Element (VBox e a) where
