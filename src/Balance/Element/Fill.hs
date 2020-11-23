@@ -1,8 +1,9 @@
-{-# LANGUAGE DeriveFoldable   #-}
-{-# LANGUAGE DeriveFunctor    #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE TypeFamilies     #-}
+{-# LANGUAGE DeriveFoldable    #-}
+{-# LANGUAGE DeriveFunctor     #-}
+{-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE FlexibleContexts  #-}
+{-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE TypeFamilies      #-}
 
 
 module Balance.Element.Fill
@@ -39,7 +40,7 @@ data Fill a = Fill
 
 
 newtype FillParams a = FillParams { unFillParams :: Rectangle a }
-  deriving (Functor, Foldable)
+  deriving (Functor, Foldable, Traversable)
 
 
 instance Element (Fill a) where

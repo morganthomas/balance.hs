@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveFoldable       #-}
 {-# LANGUAGE DeriveFunctor        #-}
+{-# LANGUAGE DeriveTraversable    #-}
 {-# LANGUAGE StandaloneDeriving   #-}
 {-# LANGUAGE TypeFamilies         #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -30,8 +31,9 @@ stack = fromStack . Stack
 
 newtype StackParams e a = StackParams [Params e a]
 
-deriving instance Functor  (Params e) => Functor  (StackParams e)
-deriving instance Foldable (Params e) => Foldable (StackParams e)
+deriving instance Functor     (Params e) => Functor     (StackParams e)
+deriving instance Foldable    (Params e) => Foldable    (StackParams e)
+deriving instance Traversable (Params e) => Traversable (StackParams e)
 
 
 instance Element e => Element (Stack e) where

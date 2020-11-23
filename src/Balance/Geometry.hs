@@ -1,6 +1,7 @@
 {-# LANGUAGE DeriveFoldable             #-}
 {-# LANGUAGE DeriveFunctor              #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DeriveTraversable          #-}
 
 
 module Balance.Geometry
@@ -27,7 +28,7 @@ import Data.List (foldl')
 
 -- |Lengths are in dots, a surface dependent unit of measure representing the surface's resolution.
 newtype Length a = Length { unLength :: a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor, Foldable)
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor, Foldable, Traversable)
 
 
 -- |Resolution is in dots per inch.
@@ -36,24 +37,24 @@ newtype Resolution a = Resolution { unResolution :: a }
 
 
 newtype Width a = Width { unWidth :: a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor, Foldable)
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor, Foldable, Traversable)
 
 
 newtype Height a = Height { unHeight :: a }
-  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor, Foldable)
+  deriving (Eq, Show, Read, Ord, Num, Real, Fractional, RealFrac, Floating, RealFloat, Functor, Foldable, Traversable)
 
 
 data Dimensions a = Dimensions { widthDim :: Width a
                                , heightDim :: Height a }
-  deriving (Functor, Foldable)
+  deriving (Functor, Foldable, Traversable)
 
 
 newtype XOffset a = XOffset { unXOffset :: a }
-  deriving (Eq, Show, Read, Ord, Num, Enum, Integral, Real, Fractional, RealFrac, Floating, RealFloat, Functor, Foldable)
+  deriving (Eq, Show, Read, Ord, Num, Enum, Integral, Real, Fractional, RealFrac, Floating, RealFloat, Functor, Foldable, Traversable)
 
 
 newtype YOffset a = YOffset { unYOffset :: a }
-  deriving (Eq, Show, Read, Ord, Num, Enum, Integral, Real, Fractional, RealFrac, Floating, RealFloat, Functor, Foldable)
+  deriving (Eq, Show, Read, Ord, Num, Enum, Integral, Real, Fractional, RealFrac, Floating, RealFloat, Functor, Foldable, Traversable)
 
 
 farX :: Num a => XOffset a -> Width a -> XOffset a
@@ -76,12 +77,12 @@ measureHeight (YOffset y0) (YOffset y1) = Height (abs (y0 - y1))
 -- length to move from the left to get to the coordinate.
 data Coord a = Coord { coordX :: XOffset a
                      , coordY :: YOffset a }
-  deriving (Eq, Ord, Functor, Foldable)
+  deriving (Eq, Ord, Functor, Foldable, Traversable)
 
 
 data Rectangle a = Rectangle { rectangleCoord :: Coord (Length a)
                              , rectangleDimensions :: Dimensions (Length a) }
-  deriving (Functor, Foldable)
+  deriving (Functor, Foldable, Traversable)
 
 
 measureRectangle :: Num a => Coord a -> Coord a -> Dimensions a
