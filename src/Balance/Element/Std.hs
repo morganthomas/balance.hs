@@ -25,7 +25,7 @@ import Data.Proxy
 import Numeric.AD (Mode)
 
 
-data StdElF a e = FillEl (FillElement a)
+data StdElF a e = FillEl (Fill a)
                 | GridEl (Grid e a)
                 | HBoxEl (HBox e a)
                 | StackEl (Stack e)
@@ -35,7 +35,7 @@ data StdElF a e = FillEl (FillElement a)
 type StdEl a = Fix (StdElF a)
 
 
-data StdElParams e a = FillElParams (FillElementParams a)
+data StdElParams e a = FillElParams (FillParams a)
                      | GridElParams (GridParams e a)
                      | HBoxElParams (HBoxParams e a)
                      | StackElParams (StackParams e a)
@@ -78,7 +78,7 @@ instance RectangularElement e => RectangularElement (StdElF a e) where
   boundingBox _ = lens getBoundingBox setBoundingBox
 
 
-fillElPxy :: FillElementParams a -> Proxy (FillElement a)
+fillElPxy :: FillParams a -> Proxy (Fill a)
 fillElPxy _ = Proxy
 
 
