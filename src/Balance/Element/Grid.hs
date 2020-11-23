@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFoldable       #-}
 {-# LANGUAGE DeriveFunctor        #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE TypeFamilies         #-}
@@ -48,7 +49,8 @@ data GridParams e a = GridParams
   , gridRowOffsets     :: Map (YOffset Int) (YOffset (Length a))
   , gridBoundingBox    :: Rectangle a }
 
-deriving instance Functor (Params e) => Functor (GridParams e)
+deriving instance Functor  (Params e) => Functor  (GridParams e)
+deriving instance Foldable (Params e) => Foldable (GridParams e)
 
 
 instance RectangularElement e => Element (Grid e a) where

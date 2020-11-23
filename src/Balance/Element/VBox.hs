@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFoldable       #-}
 {-# LANGUAGE DeriveFunctor        #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE StandaloneDeriving   #-}
@@ -39,7 +40,8 @@ data VBoxParams e a = VBoxParams
   { vboxChildrenParams :: [Params e a]
   , vboxBoundingBox    :: Rectangle a }
 
-deriving instance Functor (Params e) => Functor (VBoxParams e)
+deriving instance Functor  (Params e) => Functor  (VBoxParams e)
+deriving instance Foldable (Params e) => Foldable (VBoxParams e)
 
 
 instance RectangularElement e => Element (VBox e a) where

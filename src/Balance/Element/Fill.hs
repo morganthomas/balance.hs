@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFoldable   #-}
 {-# LANGUAGE DeriveFunctor    #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RankNTypes       #-}
@@ -38,7 +39,7 @@ data Fill a = Fill
 
 
 newtype FillParams a = FillParams { unFillParams :: Rectangle a }
-  deriving Functor
+  deriving (Functor, Foldable)
 
 
 instance Element (Fill a) where

@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFoldable       #-}
 {-# LANGUAGE DeriveFunctor        #-}
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE StandaloneDeriving   #-}
@@ -44,7 +45,8 @@ data StdElParams e a = FillElParams (FillParams a)
                      | StackElParams (StackParams e a)
                      | VBoxElParams (VBoxParams e a)
 
-deriving instance Functor (Params e) => Functor (StdElParams e)
+deriving instance Functor  (Params e) => Functor  (StdElParams e)
+deriving instance Foldable (Params e) => Foldable (StdElParams e)
 
 
 instance RectangularElement e => Element (StdElF a e) where

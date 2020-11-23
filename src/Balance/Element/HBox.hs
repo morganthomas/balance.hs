@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFoldable       #-}
 {-# LANGUAGE DeriveFunctor        #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE StandaloneDeriving   #-}
@@ -39,7 +40,8 @@ data HBoxParams e a = HBoxParams
   { hboxChildrenParams :: [Params e a]
   , hboxBoundingBox    :: Rectangle a }
 
-deriving instance Functor (Params e) => Functor (HBoxParams e)
+deriving instance Functor  (Params e) => Functor  (HBoxParams e)
+deriving instance Foldable (Params e) => Foldable (HBoxParams e)
 
 
 childPxy :: HBox e a -> Proxy e
