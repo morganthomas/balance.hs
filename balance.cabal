@@ -20,6 +20,7 @@ library
                        Balance.Element.Fill
                        Balance.Element.Grid
                        Balance.Element.HBox
+                       Balance.Element.Layers
                        Balance.Element.Rectangular
                        Balance.Element.Stack
                        Balance.Element.Std

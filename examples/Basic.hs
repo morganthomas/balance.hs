@@ -6,6 +6,7 @@ module Main where
 
 import Balance.Element
 import Balance.Element.Fill
+import Balance.Element.Stack
 import Balance.Element.Std
 import Balance.Surface
 import Balance.Surface.BlankCanvas
@@ -32,7 +33,9 @@ main = do
     send ctx $ do
       let surface = BlankCanvasSurface ctx
       dims <- getSurfaceDimensions surface
-      let el :: StdEl Double = Fix . FillEl . fillVeryRigid dims $ Just (sRGB 0 0 0)
+      let rigidEl = Fix . FillEl . fillVeryRigid dims $ Nothing
+          blackEl = Fix . FillEl $ fillFlex (Just (sRGB 0 0 0))
+          el :: StdEl Double = Fix . StackEl $ Stack [rigidEl, blackEl]
           approximations = optimize el
           maxIterations = 100
       forM_ (take maxIterations approximations) $ \params -> render el params surface

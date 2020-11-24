@@ -21,6 +21,7 @@ import Data.Proxy
 newtype Stack e = Stack [e]
 
 
+-- TODO expand out this idea to all elements to improve syntax of basic example
 class FromStack e where
   fromStack :: Stack e -> e
 
