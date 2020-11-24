@@ -41,6 +41,9 @@ data VBoxParams e a = VBoxParams
   { vboxChildrenParams :: [Params e a]
   , vboxBoundingBox    :: Rectangle a }
 
+deriving instance ( Eq a,   Eq   (Params e a) ) => Eq   (VBoxParams e a)
+deriving instance ( Show a, Show (Params e a) ) => Show (VBoxParams e a)
+deriving instance ( Read a, Read (Params e a) ) => Read (VBoxParams e a)
 deriving instance Functor     (Params e) => Functor     (VBoxParams e)
 deriving instance Foldable    (Params e) => Foldable    (VBoxParams e)
 deriving instance Traversable (Params e) => Traversable (VBoxParams e)

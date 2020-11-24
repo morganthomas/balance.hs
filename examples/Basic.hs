@@ -14,6 +14,7 @@ import Balance.Surface.BlankCanvas
 import Control.Monad (forM_)
 import Data.Colour.SRGB
 import Data.Fix
+import Data.Text (pack)
 import Graphics.Blank hiding (port)
 
 
@@ -37,5 +38,7 @@ main = do
           blackEl = Fix . FillEl $ fillFlex (Just (sRGB 0 0 0))
           el :: StdEl Double = Fix . LayersEl $ layers [rigidEl, blackEl]
           approximations = optimize el
-          maxIterations = 100
-      forM_ (take maxIterations approximations) $ \params -> render el params surface
+          maxIterations = 1000
+      forM_ (take maxIterations approximations) $ \params -> do
+        console_log (pack (show params))
+        render el params surface

@@ -50,6 +50,9 @@ data GridParams e a = GridParams
   , gridRowOffsets     :: Map (YOffset Int) (YOffset (Length a))
   , gridBoundingBox    :: Rectangle a }
 
+deriving instance ( Eq a,   Eq   (Params e a) ) => Eq   (GridParams e a)
+deriving instance ( Show a, Show (Params e a) ) => Show (GridParams e a)
+deriving instance ( Read a, Read (Params e a) ) => Read (GridParams e a)
 deriving instance Functor     (Params e) => Functor     (GridParams e)
 deriving instance Foldable    (Params e) => Foldable    (GridParams e)
 deriving instance Traversable (Params e) => Traversable (GridParams e)

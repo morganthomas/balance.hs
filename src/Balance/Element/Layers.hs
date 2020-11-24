@@ -37,6 +37,9 @@ data LayersParams e a = LayersParams
   { layersChildrenParams :: [Params e a]
   , layersBoundingBox    :: Rectangle a }
 
+deriving instance ( Eq a,   Eq   (Params e a) ) => Eq   (LayersParams e a)
+deriving instance ( Show a, Show (Params e a) ) => Show (LayersParams e a)
+deriving instance ( Read a, Read (Params e a) ) => Read (LayersParams e a)
 deriving instance Functor     (Params e) => Functor     (LayersParams e)
 deriving instance Foldable    (Params e) => Foldable    (LayersParams e)
 deriving instance Traversable (Params e) => Traversable (LayersParams e)

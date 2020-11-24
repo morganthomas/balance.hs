@@ -40,7 +40,7 @@ data Fill a = Fill
 
 
 newtype FillParams a = FillParams { unFillParams :: Rectangle a }
-  deriving (Functor, Foldable, Traversable)
+  deriving (Eq, Show, Read, Functor, Foldable, Traversable)
 
 
 instance Element (Fill a) where

@@ -32,6 +32,9 @@ stack = fromStack . Stack
 
 newtype StackParams e a = StackParams [Params e a]
 
+deriving instance Eq   (Params e a) => Eq   (StackParams e a)
+deriving instance Show (Params e a) => Show (StackParams e a)
+deriving instance Read (Params e a) => Read (StackParams e a)
 deriving instance Functor     (Params e) => Functor     (StackParams e)
 deriving instance Foldable    (Params e) => Foldable    (StackParams e)
 deriving instance Traversable (Params e) => Traversable (StackParams e)

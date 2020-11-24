@@ -41,6 +41,9 @@ data HBoxParams e a = HBoxParams
   { hboxChildrenParams :: [Params e a]
   , hboxBoundingBox    :: Rectangle a }
 
+deriving instance ( Eq a,   Eq (Params e a)   ) => Eq (HBoxParams e a)
+deriving instance ( Read a, Read (Params e a) ) => Read (HBoxParams e a)
+deriving instance ( Show a, Show (Params e a) ) => Show (HBoxParams e a)
 deriving instance Functor     (Params e) => Functor     (HBoxParams e)
 deriving instance Foldable    (Params e) => Foldable    (HBoxParams e)
 deriving instance Traversable (Params e) => Traversable (HBoxParams e)

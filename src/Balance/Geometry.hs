@@ -46,7 +46,7 @@ newtype Height a = Height { unHeight :: a }
 
 data Dimensions a = Dimensions { widthDim :: Width a
                                , heightDim :: Height a }
-  deriving (Functor, Foldable, Traversable)
+  deriving (Eq, Show, Read, Functor, Foldable, Traversable)
 
 
 newtype XOffset a = XOffset { unXOffset :: a }
@@ -77,12 +77,12 @@ measureHeight (YOffset y0) (YOffset y1) = Height (abs (y0 - y1))
 -- length to move from the left to get to the coordinate.
 data Coord a = Coord { coordX :: XOffset a
                      , coordY :: YOffset a }
-  deriving (Eq, Ord, Functor, Foldable, Traversable)
+  deriving (Eq, Show, Read, Ord, Functor, Foldable, Traversable)
 
 
 data Rectangle a = Rectangle { rectangleCoord :: Coord (Length a)
                              , rectangleDimensions :: Dimensions (Length a) }
-  deriving (Functor, Foldable, Traversable)
+  deriving (Eq, Show, Read, Functor, Foldable, Traversable)
 
 
 measureRectangle :: Num a => Coord a -> Coord a -> Dimensions a
