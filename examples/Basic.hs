@@ -34,11 +34,14 @@ main = do
     send ctx $ do
       let surface = BlankCanvasSurface ctx
       dims <- getSurfaceDimensions surface
+      console_log . pack $ show dims
       let rigidEl = Fix . FillEl . fillVeryRigid dims $ Nothing
           blackEl = Fix . FillEl $ fillFlex (Just (sRGB 0 0 0))
           el :: StdEl Double = Fix . LayersEl $ layers [rigidEl, blackEl]
           approximations = optimize el
           maxIterations = 1000
       forM_ (take maxIterations approximations) $ \params -> do
+        clearCanvas
         console_log (pack (show params))
         render el params surface
+        sync

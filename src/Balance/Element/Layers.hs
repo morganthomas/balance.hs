@@ -54,7 +54,11 @@ instance RectangularElement e => Element (Layers e a) where
 
 instance RectangularElement e => RectangularElement (Layers e a) where
   boundingBox _ = lens (\ps -> layersBoundingBox (childPxy ps) ps)
-                       (\ps@(LayersParams cps) bb -> LayersParams $ trimTo (childPxy ps) bb <$> cps)
+                       (\ps@(LayersParams cps) bb -> LayersParams
+                         $ set (boundingBox (childPxy ps))
+                               (minimumBoundingRectangle [ layersBoundingBox (childPxy ps) ps
+                                                         , bb ])
+                               <$> cps)
 
 
 layersBoundingBox :: RectangularElement e
@@ -64,16 +68,6 @@ layersBoundingBox :: RectangularElement e
                   -> LayersParams e a
                   -> Rectangle a
 layersBoundingBox pxy (LayersParams cps) = minimumBoundingRectangle (view (boundingBox pxy) <$> cps)
-
-
-trimTo :: RectangularElement e
-       => Num a
-       => Ord a
-       => Proxy e
-       -> Rectangle a
-       -> Params e a
-       -> Params e a
-trimTo pxy bb ps = set (boundingBox pxy) (minimumBoundingRectangle [bb, ps ^. boundingBox pxy]) ps
 
 
 childPxy :: LayersParams e a -> Proxy e
