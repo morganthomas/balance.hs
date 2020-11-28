@@ -33,11 +33,9 @@ layers :: Mode a => [e] -> Layers e a
 layers = Layers (quadraticPenalty prohibitiveQuadraticPenalty)
 
 
-data LayersParams e a = LayersParams
-  { layersChildrenParams :: [Params e a]
-  , layersBoundingBox    :: Rectangle a }
+newtype LayersParams e a = LayersParams { layersChildrenParams :: [Params e a] }
 
-deriving instance ( Eq a,   Eq   (Params e a) ) => Eq   (LayersParams e a)
+deriving instance (         Eq   (Params e a) ) => Eq   (LayersParams e a)
 deriving instance ( Show a, Show (Params e a) ) => Show (LayersParams e a)
 deriving instance ( Read a, Read (Params e a) ) => Read (LayersParams e a)
 deriving instance Functor     (Params e) => Functor     (LayersParams e)
@@ -48,21 +46,38 @@ deriving instance Traversable (Params e) => Traversable (LayersParams e)
 instance RectangularElement e => Element (Layers e a) where
   type Params (Layers e a) = LayersParams e
   type PenaltyConstraints (Layers e a) b = ( b ~ a, PenaltyConstraints e a, Num a, Ord a )
-  penalty (Layers f es) ps@(LayersParams cps _) = sum (zipWith penalty es cps)
-                                                + f (layersError Proxy ps)
-  guess pxy e@(Layers _ es) =
-    let subguesses = guess pxy <$> es
-    in LayersParams subguesses (minimumBoundingRectangle (view (boundingBox (childPxy e)) <$> subguesses))
-  render (Layers _ es) (LayersParams ps _) surface = forM_ (zip es ps) $ \(e,p) -> render e p surface
-
-
-childPxy :: Layers e a -> Proxy e
-childPxy _ = Proxy
+  penalty (Layers f es) ps@(LayersParams cps) = sum (zipWith penalty es cps)
+                                              + f (layersError Proxy ps)
+  guess pxy (Layers _ es) = LayersParams $ guess pxy <$> es
+  render (Layers _ es) (LayersParams ps) surface = forM_ (zip es ps) $ \(e,p) -> render e p surface
 
 
 instance RectangularElement e => RectangularElement (Layers e a) where
-  boundingBox _ = lens (\(LayersParams _ bb) -> bb)
-                       (\(LayersParams ps _) bb -> LayersParams ps bb)
+  boundingBox _ = lens (\ps -> layersBoundingBox (childPxy ps) ps)
+                       (\ps@(LayersParams cps) bb -> LayersParams $ trimTo (childPxy ps) bb <$> cps)
+
+
+layersBoundingBox :: RectangularElement e
+                  => Num a
+                  => Ord a
+                  => Proxy e
+                  -> LayersParams e a
+                  -> Rectangle a
+layersBoundingBox pxy (LayersParams cps) = minimumBoundingRectangle (view (boundingBox pxy) <$> cps)
+
+
+trimTo :: RectangularElement e
+       => Num a
+       => Ord a
+       => Proxy e
+       -> Rectangle a
+       -> Params e a
+       -> Params e a
+trimTo pxy bb ps = set (boundingBox pxy) (minimumBoundingRectangle [bb, ps ^. boundingBox pxy]) ps
+
+
+childPxy :: LayersParams e a -> Proxy e
+childPxy _ = Proxy
 
 
 layersError :: RectangularElement e
@@ -72,7 +87,7 @@ layersError :: RectangularElement e
             -> forall s. Reifies s Tape
             => LayersParams e (Reverse s a)
             -> Error (Reverse s a)
-layersError pxy (LayersParams cps bb) = sum $ childError pxy bb <$> cps
+layersError pxy ps@(LayersParams cps) = sum $ childError pxy (layersBoundingBox pxy ps) <$> cps
 
 
 childError :: RectangularElement e
